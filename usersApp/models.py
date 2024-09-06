@@ -9,7 +9,8 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 # Create your models here. 
-
+def identity(person):
+  return person
 def contactVal(contact):
  validate = re.findall("^080.{8}$|^081.{8}$|^090.{8}$|^070.{8}$", contact)
  if not validate:
@@ -19,13 +20,13 @@ def contactVal(contact):
 class pendingUser(models.Model):
   first_name = models.CharField("username", max_length=20)
   last_name = models.CharField(max_length=20)
-  contact_info = models.CharField(max_length=11, unique=True, validators=[contactVal])
+  contact_info = models.CharField(max_length=11, validators=[contactVal])
   email = models.EmailField(unique=True)
   password = models.CharField(max_length=15, unique=True)
   time_registered = models.DateTimeField(auto_now_add=True, blank=True)
   # collect the first name and time registered
   def name_time(self):
-    return f"{self.time_registered}"
+    return identity(f"{self.time_registered}")
   def __str__(self):
     return f"{self.first_name}" 
 

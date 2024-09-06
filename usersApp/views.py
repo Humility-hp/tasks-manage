@@ -5,6 +5,7 @@ from django.contrib import messages
 from .models import pendingUser
 import datetime, calendar
 from django.contrib.auth.models import User
+from django.db.models.functions import Now
 # from django.forms import formset_factory
 # Create your views here.
 def get_name(request):
@@ -17,10 +18,12 @@ def get_name(request):
    email = form.cleaned_data['email']
    pwd = form.cleaned_data['password']
   #  print(pwd)
-   regs=User.objects.create(username=fname,first_name=fname, last_name=lname, email=email, password=pwd)
-   print(regs)
-   messages.success(request,"conditions are satisfied!!")
-   print(pendingUser.name_time()) 
+   regs=pendingUser.objects.create(first_name=fname, last_name=lname, email=email, password=pwd)
+  print(pendingUser.objects.filter(first_name=fname)).values()
+  #  pends = pendingUser.objects.all()
+  #  for i in pends:
+  #   print(i.name_time())
+  messages.success(request,"conditions are satisfied!!") 
  else:
    form = Nameform()
    messages.error(request, "cross check the credentials carefully")
@@ -32,7 +35,7 @@ def trial(request):
   if form.is_valid():
    usn = form.cleaned_data['username']
    pwd = form.cleaned_data['password']
-   credentials = User.objects.filter(username = usn, password = pwd)
+   credentials = pendingUser.objects.filter(username = usn, password = pwd)
    print(credentials)
    if credentials.exists():
     now = datetime.datetime.now()
