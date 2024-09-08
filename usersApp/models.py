@@ -7,6 +7,8 @@ import re
 from django.contrib import messages
 from django.urls import reverse
 from django.utils.text import slugify
+from django.contrib.auth.models import User
+
 
 # Create your models here. 
 def identity(person):
@@ -18,11 +20,7 @@ def contactVal(contact):
  
 
 class pendingUser(models.Model):
-  first_name = models.CharField("username", max_length=20)
-  last_name = models.CharField(max_length=20)
-  contact_info = models.CharField(max_length=11, validators=[contactVal])
-  email = models.EmailField(unique=True)
-  password = models.CharField(max_length=15, unique=True)
+  first_name = models.ForeignKey(User, on_delete=models.CASCADE,max_length=20)
   time_registered = models.DateTimeField(auto_now_add=True, blank=True)
   # collect the first name and time registered
   def name_time(self):

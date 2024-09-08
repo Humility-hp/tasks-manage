@@ -4,22 +4,30 @@ from django.core.mail import send_mail
 from django.contrib import messages
 from .models import pendingUser
 import datetime, calendar
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db.models.functions import Now
+from django.contrib.auth import authenticate
 # from django.forms import formset_factory
 # Create your views here.
 def get_name(request):
  if request.method == 'POST':
   form = Nameform(request.POST, request.FILES)
-  # print(form)
   if form.is_valid():
    fname = form.cleaned_data['first_name']
    lname = form.cleaned_data['last_name']
    email = form.cleaned_data['email']
    pwd = form.cleaned_data['password']
-  #  print(pwd)
-   regs=pendingUser.objects.create(first_name=fname, last_name=lname, email=email, password=pwd)
-  print(pendingUser.objects.filter(first_name=fname)).values()
+   user=User.objects.create_user(username=fname, last_name=lname, password=pwd, email=email, is_staff=True)
+   group = Group.objects.get(name='pending-user')
+   if user is not None:
+    user.groups.add(group)
+    user.save()
+    print(user)
+  #  creating groups for all those that registered through
+   
+  # show = User.objects.filter(groups__name='pending-user')
+  # for user in users:
+  #  user.groups.add(group)
   #  pends = pendingUser.objects.all()
   #  for i in pends:
   #   print(i.name_time())
@@ -35,9 +43,8 @@ def trial(request):
   if form.is_valid():
    usn = form.cleaned_data['username']
    pwd = form.cleaned_data['password']
-   credentials = pendingUser.objects.filter(username = usn, password = pwd)
-   print(credentials)
-   if credentials.exists():
+   user_login = authenticate(username=usn, password=pwd)
+   if user_login is not None:
     now = datetime.datetime.now()
     print(now)
     return render(request, 'tasking.html')
