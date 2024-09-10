@@ -1,0 +1,76 @@
+from django.shortcuts import redirect, render
+from .forms import Nameform, reguser, testform
+from django.core.mail import send_mail
+from django.contrib import messages
+from .models import pendingUser
+import datetime, calendar
+from django.contrib.auth.models import User, Group
+from django.db.models.functions import Now
+from django.contrib.auth import authenticate
+# from django.forms import formset_factory
+# Create your views here.
+def get_name(request):
+ if request.method == 'POST':
+  form = Nameform(request.POST, request.FILES)
+  if form.is_valid():
+   fname = form.cleaned_data['first_name']
+   lname = form.cleaned_data['last_name']
+   email = form.cleaned_data['email']
+   pwd = form.cleaned_data['password']
+   user=User.objects.create_user(username=fname, last_name=lname, password=pwd, email=email, is_staff=True)
+  #  user.groups.filter(name='group name').exists(): to know if a user exists in a group
+  # group = Group.objects.filter(name='names').exists(): to know if a group exxists
+
+  #  group creation
+  groups = ['votters','pending-users','staffs-only']
+  for group in groups:
+   if Group.objects.filter(name=group).exists():
+    if group == 'pending-users':
+     group.user_set.add(user)
+     user.save()
+     messages.success(request, f'{user.first_name} has been added to {group} group')
+   else:
+    Group.objects.create(name=group)
+    if group == 'pending-users':
+     group.user_set.add(user)
+     user.save()
+     messages.success(request, f'{user.first_name} has been added to {group} group')
+    
+  #  if group == 'pending-users':
+  #   user.groups.add(group)
+  #   user.save()
+  #  if check_group is None:
+  #   Group.objects.create(group)
+  #  elif group == 'pending-users':
+  #   user.groups.add(group)
+  #   user.save()
+  #   messages.success(request, f'{group[0]}, {group[1]} and {group[2]} has successfully been created') 
+ else:
+   form = Nameform()
+   messages.error(request, "cross check the credentials carefully")
+ return render(request, "pending.html", {'form':form})
+
+def trial(request):
+ if request.method == 'POST':
+  form = reguser(request.POST, request.FILES)
+  if form.is_valid():
+   usn = form.cleaned_data['username']
+   pwd = form.cleaned_data['password']
+   user_login = authenticate(username=usn, password=pwd)
+   if user_login is not None:
+    now = datetime.datetime.now()
+    print(now)
+    return render(request, 'tasking.html')
+   else:
+    print('error message is displayed i.e user does not exist')
+    messages.error(request, "invalid credentials")
+ else:
+  form = reguser()
+ return render(request, "task.html", {'form':form})
+
+def userTask(request):
+ if request.method == "POST":
+  essay = testform(request.POST, request.FILES)
+  if essay.is_valid():
+   cleaned_essay = essay.cleaned_data['essay']
+ return render(request, 'tasking.html', {'form':essay})       
