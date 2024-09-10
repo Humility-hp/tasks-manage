@@ -18,33 +18,25 @@ def get_name(request):
    email = form.cleaned_data['email']
    pwd = form.cleaned_data['password']
    user=User.objects.create_user(username=fname, last_name=lname, password=pwd, email=email, is_staff=True)
-  #  user.groups.filter(name='group name').exists(): to know if a user exists in a group
-  # group = Group.objects.filter(name='names').exists(): to know if a group exxists
+  #  adding a user to a group
+  #  Group.objects.get(name='pending-users').user_set.add(user)
+   user.save()
+   no_repeat = Group.objects
+   groups = ['pending-users','votters','staffs-only']
+   for group in groups:
+    check = no_repeat.filter(name=group).exists()
+    if check and group == 'pending-users':
+      no_repeat.get(name=group).user_set.add(user)
+    elif not check or group == 'pending-users':
+      no_repeat.create(name=group)
+      no_repeat.get(name='pending-users').user_set.add(user)
+    messages.success(request,f'{user} has been added to pending-users group')
+     
+     
 
-  #  group creation
-  groups = ['votters','pending-users','staffs-only']
-  for group in groups:
-   if Group.objects.filter(name=group).exists():
-    if group == 'pending-users':
-     group.user_set.add(user)
-     user.save()
-     messages.success(request, f'{user.first_name} has been added to {group} group')
-   else:
-    Group.objects.create(name=group)
-    if group == 'pending-users':
-     group.user_set.add(user)
-     user.save()
-     messages.success(request, f'{user.first_name} has been added to {group} group')
-    
-  #  if group == 'pending-users':
-  #   user.groups.add(group)
-  #   user.save()
-  #  if check_group is None:
-  #   Group.objects.create(group)
-  #  elif group == 'pending-users':
-  #   user.groups.add(group)
-  #   user.save()
-  #   messages.success(request, f'{group[0]}, {group[1]} and {group[2]} has successfully been created') 
+  #  user.groups.filter(name='group name').exists(): to know if a user exists in a group
+  # group = Group.objects.filter(name='names').exists(): to know if a group exists
+  # my_group = Group.objects.get(name='my_group_name'), my_group.user_set.add(your_user)  
  else:
    form = Nameform()
    messages.error(request, "cross check the credentials carefully")
