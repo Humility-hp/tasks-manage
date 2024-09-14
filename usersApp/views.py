@@ -2,11 +2,10 @@ from django.shortcuts import redirect, render
 from .forms import Nameform, reguser, testform
 from django.core.mail import send_mail
 from django.contrib import messages
-from .models import pendingUser
+from .models import daily_task
 import datetime, calendar
 from django.contrib.auth.models import User, Group
-from django.db.models.functions import Now
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 # from django.forms import formset_factory
 # Create your views here.
 def get_name(request):
@@ -21,6 +20,7 @@ def get_name(request):
   #  adding a user to a group
   #  Group.objects.get(name='pending-users').user_set.add(user)
    user.save()
+   print(f'{fname} is successfully added')
    no_repeat = Group.objects
    groups = ['pending-users','votters','staffs-only']
    for group in groups:
@@ -32,10 +32,7 @@ def get_name(request):
       no_repeat.get(name='pending-users').user_set.add(user)
     messages.success(request,f'{user} has been added to pending-users group')
      
-     
-
   #  user.groups.filter(name='group name').exists(): to know if a user exists in a group
-  # group = Group.objects.filter(name='names').exists(): to know if a group exists
   # my_group = Group.objects.get(name='my_group_name'), my_group.user_set.add(your_user)  
  else:
    form = Nameform()
@@ -50,8 +47,8 @@ def trial(request):
    pwd = form.cleaned_data['password']
    user_login = authenticate(username=usn, password=pwd)
    if user_login is not None:
-    now = datetime.datetime.now()
-    print(now)
+    login(request, user_login)
+    messages.success(request, f'{request.user} is logged in successfully')
     return render(request, 'tasking.html')
    else:
     print('error message is displayed i.e user does not exist')
@@ -64,5 +61,9 @@ def userTask(request):
  if request.method == "POST":
   essay = testform(request.POST, request.FILES)
   if essay.is_valid():
-   cleaned_essay = essay.cleaned_data['essay']
+   cleaned_essays = essay.cleaned_data['essay']
+  # use exists on objects to validate the presence of a query
+   
+  #  check same users items in daily_task
+  
  return render(request, 'tasking.html', {'form':essay})       

@@ -1,4 +1,4 @@
-import calendar, datetime
+import calendar, datetime, time
 from django.utils import timezone
 # calendar.setfirstweekday(calendar.SUNDAY)
 # print(calendar.leapdays(2000,2025)): returns numbers of leap year btw this years
@@ -11,12 +11,3 @@ from django.utils import timezone
 this = datetime.datetime.now()
 day1 = datetime.date(2020,9,22)
 day2 = datetime.date(2020,6,3)
-print(day1-day2)
-print(day1 + day2)
-if str(day1 - day2) == '111 days, 0:00:00':
- print('yes it is')
- # day2 = day2 + datetime.date.today()
- print(day2)
-else:
- print('no it isnt')
-

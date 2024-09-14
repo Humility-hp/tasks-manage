@@ -1,6 +1,5 @@
 from django import forms
 from django.forms import ModelForm
-from .models import pendingUser
 # declare the django class beneath here
 class Nameform(forms.Form):
  first_name = forms.CharField(required=True, max_length=20)
