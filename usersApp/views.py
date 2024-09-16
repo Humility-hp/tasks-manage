@@ -4,6 +4,8 @@ from django.core.mail import send_mail
 from django.contrib import messages
 from .models import daily_task
 import datetime, calendar
+from django.utils import timezone
+from django.utils.timezone import get_default_timezone_name
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login
 # from django.forms import formset_factory
@@ -48,6 +50,11 @@ def trial(request):
    user_login = authenticate(username=usn, password=pwd)
    if user_login is not None:
     login(request, user_login)
+    # know the database timezone
+    # print(request.user.date_joinecd d) a users date_joined
+    print(get_default_timezone_name())
+    print(datetime.datetime.now())
+    print(request.user.date_joined) 
     messages.success(request, f'{request.user} is logged in successfully')
     return render(request, 'tasking.html')
    else:
