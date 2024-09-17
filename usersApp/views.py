@@ -1,12 +1,12 @@
 from django.shortcuts import redirect, render
 from .forms import Nameform, reguser, testform
-from django.core.mail import send_mail
 from django.contrib import messages
 from .models import daily_task
-import datetime, calendar
-from datetime import datetime, timezone
+import datetime
+from datetime import datetime, timedelta
 # from django.utils import timezone
-from django.utils.timezone import get_default_timezone_name, activate, make_aware, is_aware
+from django.utils.timezone import get_default_timezone_name, activate, make_aware
+from django.db.models import Q
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login
 # from django.forms import formset_factory
@@ -51,14 +51,11 @@ def trial(request):
    user_login = authenticate(username=usn, password=pwd)
    if user_login is not None:
     login(request, user_login)
-    # know the database timezone
-    # print(request.user.date_joinecd d) a users date_joined
-    print(activate('Africa/Lagos'))
-    aware = make_aware(datetime.datetime.now())
-    print(is_aware(aware))
-    print(datetime.datetime(1997,9,26,14,12,20, tzinfo=timezone.ZoneInfo("Africa/Lagos")))
-    time_difference=aware-request.user.date_joined 
-    print(time_difference.total_seconds()/(60*60))
+    # retrieve date less or equal to certain day
+    now = make_aware(datetime.now())
+    prev_days = make_aware(datetime.now()-timedelta(days=3))
+    search_it = User.objects.filter(Q(date_joined__gte=prev_days) & Q(date_joined__lte=now)).values('username','date_joined')
+    print(search_it)
     messages.success(request, f'{request.user} is logged in successfully')
     return render(request, 'tasking.html')
    else:
@@ -72,7 +69,23 @@ def userTask(request):
  if request.method == "POST":
   essay = testform(request.POST, request.FILES)
   if essay.is_valid():
-   cleaned_essays = essay.cleaned_data['essay']
+   # make time aware
+    aware = make_aware(datetime.now())
+  # confirm if less than  days from the day of registration
+    if aware < request.user.date_joined+timedelta(days=4, hours=11):
+    #  send an error message to front end
+    # retrieve date less than or equal to 2 hours
+     prev_time = make_aware(datetime.now()-timedelta(hours=24))
+     search_prev_time = daily_task.objects.filter(request.user)
+    #  .filter(Q(date_joined__gte=prev_time) & Q(date_joined=aware))
+     if search_prev_time is None:
+      print(search_prev_time)
+      # go ahead and check if the words pass the three letterword test
+      print("items are added successfully")
+    else:
+     print("this tasks time limit exceeded")
+  #  cleaned_essays = essay.cleaned_data['essay']
+
   # use exists on objects to validate the presence of a query
    
   #  check same users items in daily_task
