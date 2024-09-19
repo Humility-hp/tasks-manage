@@ -76,12 +76,9 @@ def userTask(request):
     #  send an error message to front end
     # retrieve date less than or equal to 2 hours
      prev_time = make_aware(datetime.now()-timedelta(hours=24))
-     search_prev_time = daily_task.objects.filter(request.user)
+     search_prev_time = daily_task.objects.filter(created_by=request.user.id)
     #  .filter(Q(date_joined__gte=prev_time) & Q(date_joined=aware))
-     if search_prev_time is None:
-      print(search_prev_time)
-      # go ahead and check if the words pass the three letterword test
-      print("items are added successfully")
+     print(search_prev_time)
     else:
      print("this tasks time limit exceeded")
   #  cleaned_essays = essay.cleaned_data['essay']
