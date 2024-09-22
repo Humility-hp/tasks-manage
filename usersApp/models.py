@@ -26,4 +26,4 @@ class daily_task(models.Model):
   essay = models.TextField()
 
   def __str__(self):
-    return self.created
+    return str(self.created_by)

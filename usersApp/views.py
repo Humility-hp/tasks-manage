@@ -71,20 +71,22 @@ def userTask(request):
   if essay.is_valid():
    # make time aware
     aware = make_aware(datetime.now())
+    # add item to database and test it
+    cleaned_essay = essay.cleaned_data['essay']
   # confirm if less than  days from the day of registration
-    if aware < request.user.date_joined+timedelta(days=4, hours=11):
-    #  send an error message to front end
+    if aware < request.user.date_joined + timedelta(days=10):
     # retrieve date less than or equal to 2 hours
      prev_time = make_aware(datetime.now()-timedelta(hours=24))
-     search_prev_time = daily_task.objects.filter(created_by=request.user.id)
     #  .filter(Q(date_joined__gte=prev_time) & Q(date_joined=aware))
-     print(search_prev_time)
+     essay_lessthan_24_hr_ago = daily_task.objects.filter(created_by=request.user).filter(Q(created_at__gte=prev_time) & Q(created_at__lte=aware))
+     if essay_lessthan_24_hr_ago:
+        #test if essay is more than 10 three later words first
+      essay_splitted = cleaned_essay.split()
+      sorted_essay = sorted(essay_splitted, key=len, reverse=True)
+      if len(sorted_essay[6]) >=4:
+       daily_task.objects.create(created_by=request.user,essay=cleaned_essay)
+       print('essay is saved successfully into the database')
     else:
      print("this tasks time limit exceeded")
-  #  cleaned_essays = essay.cleaned_data['essay']
-
-  # use exists on objects to validate the presence of a query
-   
-  #  check same users items in daily_task
   
  return render(request, 'tasking.html', {'form':essay})       
