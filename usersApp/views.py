@@ -5,7 +5,7 @@ from .models import daily_task
 import datetime
 from datetime import datetime, timedelta
 # from django.utils import timezone
-from django.utils.timezone import get_default_timezone_name, activate, make_aware
+from django.utils.timezone import make_aware, make_naive
 from django.db.models import Q
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login
@@ -63,30 +63,43 @@ def trial(request):
     messages.error(request, "invalid credentials")
  else:
   form = reguser()
+
+
  return render(request, "task.html", {'form':form})
 
 def userTask(request):
  if request.method == "POST":
   essay = testform(request.POST, request.FILES)
   if essay.is_valid():
-   # make time aware
     aware = make_aware(datetime.now())
+    # 14th september 2024 at 09:28AM
+    naive = make_naive(request.user.date_joined)
+    times=[naive,naive+timedelta(days=7)]
+    begins = None
+    for time in times:
+     if time == times[0]:
+      begins =
+
     # add item to database and test it
     cleaned_essay = essay.cleaned_data['essay']
-  # confirm if less than  days from the day of registration
-    if aware < request.user.date_joined + timedelta(days=10):
-    # retrieve date less than or equal to 2 hours
-     prev_time = make_aware(datetime.now()-timedelta(hours=24))
-    #  .filter(Q(date_joined__gte=prev_time) & Q(date_joined=aware))
-     essay_lessthan_24_hr_ago = daily_task.objects.filter(created_by=request.user).filter(Q(created_at__gte=prev_time) & Q(created_at__lte=aware))
+      # confirm if less than  days from the day of registration
+    if aware < request.user.date_joined + timedelta(days=15):
+     greet = 'welcome hosea philip'
+     prev_time = make_aware(datetime.now()-timedelta(days=2))
+     essay_lessthan_24_hr_ago = daily_task.objects.filter(created_by=request.user).filter(Q(created_at__gt=prev_time) & Q(created_at__lte=aware))
      if essay_lessthan_24_hr_ago:
-        #test if essay is more than 10 three later words first
       essay_splitted = cleaned_essay.split()
       sorted_essay = sorted(essay_splitted, key=len, reverse=True)
       if len(sorted_essay[6]) >=4:
        daily_task.objects.create(created_by=request.user,essay=cleaned_essay)
-       print('essay is saved successfully into the database')
+       msg = 'Tests passed! essay saved to the database'
+      else:
+       msg = 'essay must contain atleast six-three letter words'
+     else:
+      msg = 'Next essay must be 24hrs or more ago from the previous'
     else:
-     print("this tasks time limit exceeded")
-  
- return render(request, 'tasking.html', {'form':essay})       
+     msg = 'Your duration of tasks is exceeded'
+  else:
+   msg = 'Essay is invalid/empty!!'
+  # dont forget to attach a message whenever the backend fails 
+ return render(request, 'tasking.html', {'form':essay, 'msg':msg,'greet':greet})       
