@@ -63,8 +63,6 @@ def trial(request):
     messages.error(request, "invalid credentials")
  else:
   form = reguser()
-
-
  return render(request, "task.html", {'form':form})
 
 def userTask(request):
@@ -73,18 +71,31 @@ def userTask(request):
   if essay.is_valid():
     aware = make_aware(datetime.now())
     # 14th september 2024 at 09:28AM
+    starts =''
+    ends =''
     naive = make_naive(request.user.date_joined)
     times=[naive,naive+timedelta(days=7)]
-    begins = None
     for time in times:
-     if time == times[0]:
-      begins =
-
+      if time == times[0]:
+       starts = time.strftime("%d %B %Y at %I:%M%p")
+      else:
+       ends = time.strftime("%d %B %Y at %I:%M%p")
     # add item to database and test it
+    # greeting hander
+    time = datetime.now().hour
+    if time < 12:
+     greetings ='Morning'
+    elif time>12 and time<16:
+     greetings="Afternoon"
+    else:
+     greetings='Evening'
+    # record handler
+    record = daily_task.objects.filter(created_by=request.user).values('essay')
+    print(record)
+
     cleaned_essay = essay.cleaned_data['essay']
       # confirm if less than  days from the day of registration
     if aware < request.user.date_joined + timedelta(days=15):
-     greet = 'welcome hosea philip'
      prev_time = make_aware(datetime.now()-timedelta(days=2))
      essay_lessthan_24_hr_ago = daily_task.objects.filter(created_by=request.user).filter(Q(created_at__gt=prev_time) & Q(created_at__lte=aware))
      if essay_lessthan_24_hr_ago:
@@ -102,4 +113,4 @@ def userTask(request):
   else:
    msg = 'Essay is invalid/empty!!'
   # dont forget to attach a message whenever the backend fails 
- return render(request, 'tasking.html', {'form':essay, 'msg':msg,'greet':greet})       
+ return render(request, 'tasking.html', {'form':essay, 'msg':msg,'greet':greetings,'start':starts,'end':ends})       

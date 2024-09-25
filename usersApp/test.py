@@ -1,5 +1,12 @@
 import calendar, datetime, time, zoneinfo
 from django.utils import timezone
+diff = datetime.datetime.now()
+if diff.hour <12:
+ print('good morning sir')
+elif diff.hour >12 and diff.hour < 16:
+ print("Good afternoon sir")
+else:
+ print('good evening')
 # calendar.setfirstweekday(calendar.SUNDAY)
 # print(calendar.leapdays(2000,2025)): returns numbers of leap year btw this years
 # print(calendar.isleap(2004)): tell if the year in bracket is a leap year
