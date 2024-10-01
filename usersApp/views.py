@@ -91,15 +91,20 @@ def userTask(request):
   essay = testform(request.POST, request.FILES)
   if essay.is_valid():
    record = daily_task.objects.filter(created_by=request.user).values('essay')
-   print(record)
+  #  print(record)
 
    cleaned_essay = essay.cleaned_data['essay']
     # confirm if less than days from the day of registration
    aware = make_aware(datetime.now())
    if aware < request.user.date_joined + timedelta(days=30):
-    prev_time = make_aware(datetime.now()-timedelta(minutes=2))
-    essay_lessthan_24_hr_ago = daily_task.objects.filter(created_by=request.user).filter(Q(created_at__gt=prev_time) & Q(created_at__lte=aware))
-    if essay_lessthan_24_hr_ago:
+    # if recently added item is 24hrs earlier or exacly
+    # prev_time = make_aware(datetime.now()-timedelta(minutes=9))
+    # essay_lessthan_24_hr_ago = daily_task.objects.filter(created_by=request.user).filter(Q(created_at__gt=prev_time) & Q(created_at__lte=aware))
+    # print(essay_lessthan_24_hr_ago)
+    date_recent_item = daily_task.objects.filter(created_by=request.user).order_by('-created_at').values('created_at')[0]['created_at']
+    print(date_recent_item+timedelta(days=1))
+    if date_recent_item+timedelta(hours=12)<=make_aware(datetime.now()):
+     print('yes date is 1day or more ago')
      essay_splitted = cleaned_essay.split()
      sorted_essay = sorted(essay_splitted, key=len, reverse=True)
      if len(sorted_essay[6])>=4:
@@ -109,16 +114,14 @@ def userTask(request):
       msg = 'essay must contain atleast six-three letter words'
     else:
       # time restrain here!
-      dates_of_essay = daily_task.objects.order_by("-created_at").values('created_at')[0]['created_at']
-      time_remaining = datetime.now()-(make_naive(dates_of_essay)+timedelta(hours=3))
-      print(make_aware(time_remaining, utcoffset=True))
-      # make_aware(time_remaining).strftime
-      hours=math.floor(time_remaining.seconds/(3600))
-      minutes=time_remaining-hours*timedelta(seconds=3600)
-      print(time_remaining)
-      # sorted_dates_of_essay = sorted(dates_of_essay, reverse=True)
-      # print(sorted_dates_of_essay,'i am the date that as sorted')
-      msg = 'Next essay must be 2hrs or more from the previous essay'
+      print('time still less than expected')
+      essay_untill = date_recent_item + timedelta(days=1)-make_aware(datetime.now())
+      print(date_recent_item)
+      print(date_recent_item+timedelta(days=1))
+      time_split=str(essay_untill).split(":")
+      # make_aware(time_remaining)
+      # print(time_remaining,hours)
+      msg = f' next essay must 2hrs from recent essay wait for{time_split[0]}minutes:{time_split[1]}seconds'
    else:
      msg = 'Your duration of tasks is exceeded'
   else:
