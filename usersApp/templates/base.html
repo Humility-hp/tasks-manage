@@ -112,26 +112,42 @@
   </div>
   <br>
   <!-- another lesson to note -->
-<div class="row">
-  <div class="col">col</div>
-  <div class="col">col</div>
-  <div class="col">col</div>
-  <div class="col">col</div>
-</div>
-<div class="row">
-  <div class="col-8">col-8</div>
-  <div class="col-4">col-4</div>
-</div>
-<br>
-<!-- next lesson -->
- <div class="row">
-  <div class="col-sm-8">col-sm-8</div>
-  <div class="col-sm-4">col-sm-4</div>
-</div>
-<div class="row">
-  <div class="col-sm">col-sm</div>
-  <div class="col-sm">col-sm</div>
-  <div class="col-sm">col-sm</div>
-</div>
+   <!-- stack the column on mobile by making one ful-width and the other half-width -->
+  <div class="row bg-secondary">
+    <div class="col-12 col-md-8 bg-danger">.col-12 .col-md-8</div>
+    <div class="col-6 col-md-4 bg-white">.col-6 .col-md-4</div>
+  </div>
+  <br>
+  <!-- watch this reactions for a better understanding: lessons below are... beyond small screen size, they are in one column i.e 8 and 4 sizes -->
+   <div class="row h-75 bg-secondary">
+    <div class="col-sm-8 bg-danger">col-sm-8</div>
+    <div class="col-sm-4 bg-primary">col-sm-4</div>
+   </div>
+   <br>
+  <!-- they are stacked of col. each 6 below medium screen size-->
+   <div class="row bg-secondary">
+    <div class="col-6 col-md-4 bg-danger">.col-6 .col-md-4</div>
+    <div class="col-6 col-md-4 bg-white">.col-6 .col-md-4</div>
+    <div class="col-6 col-md-4 bg-primary">.col-6 .col-md-4</div>
+   </div>
+   <!-- aignment of grids -->
+    <div class="container w-75 bg-danger">
+      <!-- first row -->
+      <div class="row bg-light align-items-start">
+        <div class="col bg-primary">One of the three columns 1</div>
+        <div class="col bg-secondary">One of the three columns 1</div>
+        <div class="col bg-danger">One of the three columns 1</div>
+      </div>
+      <!-- second row -->
+      <div class="row bg-info align-items-center">
+        <div class="col">One of the three columns 2</div>
+        <div class="col">One of the three columns 2</div>
+        <div class="col">One of the three columns 2</div>
+      </div>
+      <!-- third row -->
+       <div class="row bg-success align-items-sm-center justify-content-sm-center" style="height: 500px;">
+        <div class="col-3 h-25 bg-danger">hello everyone</div>
+       </div>
+    </div>
 </body>
 </html>
