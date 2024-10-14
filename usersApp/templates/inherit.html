@@ -24,9 +24,49 @@
     <div class="col bg-success w-25 h-25">One of the three columns 3</div>
   </div>
 </div>
+<form action="/form" method="POST"></form>
+{% csrf_token %}
+<input type="submit" value="submit">
+<div class="first-two">
+ {{form}}
+</div>
+</form>
+<style>
+ .first-two{
+  background-color:aqua;
+  margin-left:auto;
+  margin-right:auto;
+  display:flex;
+  justify-content:center
+ }
+</style>
 <!-- another work here:assignmen for myself -->
  <div class="container">
+<div class="container"></div>
+  <div class="form-box">
+   <h1 id="tittle">Sign Up</h1>
+   <form id="form">
+    <div class="input-group">
+     <div class="input-field" id="nameField">
+      <input type="text" placeholder="Name">
+     </div>
 
+     <div class="input-field">
+      <input type="email" placeholder="Email">
+     </div>
+
+     <div class="input-field">
+      <input type="password" placeholder="Password">
+     </div>
+     <p>Lost password <a href="#">Click Here!</a></p>
+    </div>
+    <div class="btn-field">
+     <button type="button" id="submitbtn">Submit</button>
+    </div>
+   </form>
+
+  </div>
+ </div>
  </div>
 </body>
 </html>
